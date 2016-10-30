@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <vector>
 #include <string>
+#include <cmath>
 
 // pcLib
 #include "common.h"
@@ -19,6 +20,19 @@ struct Point{
   float       nx, ny, nz;
   uint8_t     r,g,b,a;
   int         flags=0;
+
+  Point()
+  : x(0),
+    y(0),
+    z(0),
+    nx(0),
+    ny(0),
+    nz(0),
+    r(0),
+    g(0),
+    b(0),
+    a(0),
+    flags(0) {}
 
   void print() {
     LOG << "Point:" << std::endl

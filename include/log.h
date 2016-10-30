@@ -19,9 +19,9 @@ struct tmpEndl {
           std::cerr << "[" << __FILENAME__ << ":" << __LINE__ << "] ")
 
 // debug macro that only logs messages in debug mode
-// #ifndef DEBUG_MESSAGES
+#ifndef DEBUG_MESSAGES
 #define DEBUG_MESSAGES 0
-//#endif
+#endif
 
 #if DEBUG_MESSAGES
 #define DEBUG LOG<<"DEBUG | "
