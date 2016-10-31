@@ -1,5 +1,7 @@
 #include <voxelGridFilter.h>
+#ifdef USE_OpenMP
 #include <omp.h>
+#endif
 
 void VoxelGridFilter::filter(const std::vector<Point> & inputPointCloud,
     std::vector<Point>& resultPointCloud) {
@@ -25,15 +27,18 @@ void VoxelGridFilter::filter(const std::vector<Point> & inputPointCloud,
 
   std::map<size_t, std::vector<size_t> > voxels;
   std::vector<size_t> voxelIds;
-
+#ifdef USE_OpenMP
   #pragma omp parallel for
+#endif
   for (size_t i = 0; i < numPoints; i++) {
     const Point & p = inputPointCloud[i];
     const size_t x(static_cast<size_t>(floor((p.x - minP.x)/leafSize)));
     const size_t y(static_cast<size_t>(floor((p.y - minP.y)/leafSize)));
     const size_t z(static_cast<size_t>(floor((p.z - minP.z)/leafSize)));
     const size_t id((z * numVoxelZ) + (y * numVoxelY) + x);
+#ifdef USE_OpenMP
     #pragma omp critical(VoxelGridUpdate)
+#endif
     {
       if(voxels.find(id) == voxels.end()) {
         voxels[id] = std::vector<size_t> ();
@@ -48,7 +53,9 @@ void VoxelGridFilter::filter(const std::vector<Point> & inputPointCloud,
   resultPointCloud.reserve(numNewPoints);
 
   LOG << "Number of voxels = " << numNewPoints;
+#ifdef USE_OpenMP
   #pragma omp parallel for
+#endif
   for (size_t i = 0; i < numNewPoints; i++) {
     const size_t vId(voxelIds[i]);
     const size_t numVoxelPoints(voxels[vId].size());
@@ -58,7 +65,9 @@ void VoxelGridFilter::filter(const std::vector<Point> & inputPointCloud,
     if(useMediod) findMediod(inputPointCloud, voxels[vId], np);
     else findMean(inputPointCloud, voxels[vId], np);
 
+#ifdef USE_OpenMP
     #pragma omp critical (PointsUpdate)
+#endif
     {
       resultPointCloud.push_back(np);
       voxels[vId].clear();
