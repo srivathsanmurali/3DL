@@ -27,7 +27,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 OPTION (USE_OpenMP "Use OpenMP" OFF)
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   set(USE_OpenMP ON)
-else()
+elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
   set(USE_OpenMP OFF)
 endif()
 
