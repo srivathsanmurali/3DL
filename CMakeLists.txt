@@ -38,6 +38,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 include_directories(
   .
   "${PROJECT_SOURCE_DIR}/thirdparty/stlplus"
+  "${PROJECT_SOURCE_DIR}/thirdparty/"
 )
 
 # store list of header files in variable for further use,
@@ -45,6 +46,7 @@ include_directories(
 file(GLOB HDRS
     "./*.h"
     "thirdparty/stlplus/*.hpp"
+    "thirdparty/log.h"
 )
 
 # install all files in the nomoko header folder
