@@ -9,12 +9,8 @@ set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 # show all warnings, optimize, optimize for current architecture
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -Wall -O3 -march=native")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -O3 -march=native")
-
-# Standard settings are the same as release
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS_RELEASE} -Wall -O3 -march=native")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_RELEASE} -Wall -O3 -march=native")
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -Wall -O3")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -O3")
 
 # show all warnings, don't optimize, debug symbols
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall -O0 -g")
@@ -24,19 +20,14 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -O0 -g")
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-OPTION (USE_OpenMP "Use OpenMP" OFF)
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+OPTION (USE_OpenMP "Use OpenMP" ON)
+FIND_PACKAGE(OpenMP)
+IF(OPENMP_FOUND)
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
   set(USE_OpenMP ON)
-elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+else()
   set(USE_OpenMP OFF)
-endif()
-
-IF(USE_OpenMP)
-  FIND_PACKAGE(OpenMP)
-  IF(OPENMP_FOUND)
-    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-  ENDIF()
 ENDIF()
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -45,15 +36,14 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # all header files are in this folder, so include here rather than in subordinate cmake files
 include_directories(
-    "${PROJECT_SOURCE_DIR}/include"
-    "${CMAKE_SOURCE_DIR}/include"   # useful for calling from a parent project
-    "${PROJECT_SOURCE_DIR}/thirdparty/stlplus"
+  .
+  "${PROJECT_SOURCE_DIR}/thirdparty/stlplus"
 )
 
 # store list of header files in variable for further use,
 # todo: make manual in order to have make detect changes..
 file(GLOB HDRS
-    "include/*.h"
+    "./*.h"
     "thirdparty/stlplus/*.hpp"
 )
 
@@ -74,7 +64,14 @@ if( BUILD_TESTS )
     enable_testing()
 endif( BUILD_TESTS )
 
+#plyIO
+add_library(libPlyIO plyIO.cc ${HDRS})
+install(TARGETS libPlyIO DESTINATION "lib/3DL")
+ 
+#voxelGridFilter
+add_library(libVoxelGridFilter voxelGridFilter.cc ${HDRS})
+install(TARGETS libVoxelGridFilter DESTINATION "lib/3DL")
+
 # everything else happens in the subfolders
-add_subdirectory(source)
 add_subdirectory(thirdparty)
 add_subdirectory(exampleApps)
