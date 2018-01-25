@@ -74,6 +74,10 @@ install(TARGETS libPlyIO DESTINATION "lib/3DL")
 add_library(libVoxelGridFilter voxelGridFilter.cc ${HDRS})
 install(TARGETS libVoxelGridFilter DESTINATION "lib/3DL")
 
+# ransacPlaneDetection
+add_library(libRansacPlaneDetection ransacPlaneDetection.cc ransacPlaneDetection.h)
+install(TARGETS libRansacPlaneDetection DESTINATION "lib/3DL")
+
 # everything else happens in the subfolders
 add_subdirectory(thirdparty)
 add_subdirectory(exampleApps)

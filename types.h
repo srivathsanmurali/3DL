@@ -53,4 +53,7 @@ struct Face {
   int32_t                   flags;
 };
 
+using Points = std::vector<Point>;
+using Faces  = std::vector<Face>;
+
 #endif // _TYPES_H_
